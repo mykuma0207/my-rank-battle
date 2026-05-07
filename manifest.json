@@ -1,6 +1,6 @@
 {
-  "name": "ランク・バトル！",
-  "short_name": "ランクバトル",
+  "name": "まゐのカードバトル！",
+  "short_name": "まゐバト",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#1a252f",
