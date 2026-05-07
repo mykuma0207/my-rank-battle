@@ -1,1 +1,192 @@
+// --- ゲームの状態管理 ---
+let playerHand = [], round = 1, wins = 0, loses = 0, cpuHandCount = 5;
+const ranks = ['S', 'A', 'B', 'C', 'D', 'E'];
+const getImgPath = (type) => `images/${type}.png`; 
 
+// --- 音源の準備 ---
+const normalSE = new Audio('images/se.mp3');     // 普通のカード用
+const shakinSE = new Audio('images/shakin.mp3'); // Sランク専用
+
+// --- ゲーム初期化 ---
+function initGame() {
+    round = 1; wins = 0; loses = 0; cpuHandCount = 5;
+    playerHand = Array.from({length: 5}, () => getRandomRank());
+    
+    document.getElementById('reset-btn').style.display = 'none';
+    document.getElementById('result-text').innerText = "カードを選んでね";
+    document.getElementById('player-pushed').innerHTML = '';
+    document.getElementById('cpu-pushed').innerHTML = '';
+    document.getElementById('player-pushed').className = 'card empty';
+    document.getElementById('cpu-pushed').className = 'card empty';
+    document.getElementById('p-effect-container').innerHTML = '';
+    document.getElementById('c-effect-container').innerHTML = '';
+    
+    const pChar = document.getElementById('player-char'), cChar = document.getElementById('cpu-char');
+    pChar.classList.remove('char-win', 'char-lose');
+    cChar.classList.remove('char-win', 'char-lose');
+
+    const msgEl = document.getElementById('special-msg');
+    msgEl.innerText = ''; msgEl.className = 'special-msg';
+
+    renderHand();
+    updateUI();
+}
+
+// ランクのランダム抽選（Sは5%）
+function getRandomRank() {
+    const r = Math.random();
+    return r < 0.05 ? 'S' : ['A','B','C','D','E'][Math.floor(Math.random()*5)];
+}
+
+// プレイヤー手札の描画（透明化を維持）
+function renderHand() {
+    const container = document.getElementById('player-hand');
+    container.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const type = playerHand[i];
+        const card = document.createElement('div');
+        card.className = 'card';
+        if (type) {
+            card.setAttribute('data-type', type);
+            card.innerHTML = `<img src="${getImgPath(type)}" onerror="this.style.display='none'">`;
+            card.onclick = () => playRound(i);
+        } else {
+            card.style.visibility = 'hidden';
+        }
+        container.appendChild(card);
+    }
+}
+
+// 1ラウンドの勝負処理
+function playRound(index) {
+    if (round > 3 || !playerHand[index]) return;
+    
+    const pHand = playerHand[index];
+    const cHand = getRandomRank();
+
+    // ★ 音の分岐（用意されたファイルを使用）
+    if (pHand === 'S') {
+        shakinSE.currentTime = 0;
+        shakinSE.play();
+    } else {
+        normalSE.currentTime = 0;
+        normalSE.play();
+    }
+
+    cpuHandCount--;
+    setSlot('player-pushed', pHand);
+    setSlot('cpu-pushed', cHand);
+
+    // 演出用メッセージのリセット
+    const msgEl = document.getElementById('special-msg');
+    msgEl.innerText = ''; msgEl.className = 'special-msg';
+
+    // 神降臨・下克上の演出
+    setTimeout(() => {
+        if (pHand === 'S') {
+            msgEl.innerText = "神 降 臨";
+            msgEl.classList.add('s-arrival-text');
+            startConfetti(30);
+            setTimeout(() => { msgEl.innerText = ''; }, 2000); // 2秒で消す
+        }
+        if (pHand === 'E' && cHand === 'A') {
+            msgEl.innerText = "下 克 上";
+            msgEl.classList.add('gekokujo-text');
+            document.body.classList.add('screen-shake');
+            setTimeout(() => {
+                document.body.classList.remove('screen-shake');
+                msgEl.innerText = ''; 
+            }, 1500); // 1.5秒で消す
+        }
+    }, 50);
+
+    let res = judge(pHand, cHand);
+    if (res === 'win') { wins++; document.getElementById('result-text').innerText = "勝ち！"; }
+    else if (res === 'lose') { loses++; document.getElementById('result-text').innerText = "負け..."; }
+    else { document.getElementById('result-text').innerText = "引き分け"; }
+
+    playerHand[index] = null;
+    if (round === 3) setTimeout(finishGame, 1500);
+    else { round++; setTimeout(() => { updateUI(); renderHand(); }, 1200); }
+}
+
+// 強さの判定
+function judge(p, c) {
+    if (p === c) return 'draw';
+    if (p === 'E' && c === 'A') return 'win';
+    if (p === 'A' && c === 'E') return 'lose';
+    return ranks.indexOf(p) < ranks.indexOf(c) ? 'win' : 'lose';
+}
+
+// 場のスロットを更新
+function setSlot(id, type) {
+    const slot = document.getElementById(id);
+    slot.className = 'card'; slot.setAttribute('data-type', type);
+    slot.innerHTML = `<img src="${getImgPath(type)}" onerror="this.style.display='none'">`;
+}
+
+// ゲーム終了時の演出
+function finishGame() {
+    updateUI();
+    const pChar = document.getElementById('player-char'), cChar = document.getElementById('cpu-char');
+    
+    // 一度クラスを消して再発動
+    pChar.classList.remove('char-win', 'char-lose');
+    cChar.classList.remove('char-win', 'char-lose');
+
+    setTimeout(() => {
+        if (wins > loses) {
+            pChar.classList.add('char-win'); cChar.classList.add('char-lose');
+            spawnIcons('p-effect-container');
+            document.getElementById('result-text').innerText = "🎉 勝利！ 🎉"; startConfetti(80);
+        } else if (loses > wins) {
+            cChar.classList.add('char-win'); pChar.classList.add('char-lose');
+            spawnIcons('c-effect-container');
+            document.getElementById('result-text').innerText = "敗北...";
+        }
+    }, 10);
+    document.getElementById('player-hand').innerHTML = '';
+    document.getElementById('reset-btn').style.display = 'block';
+}
+
+// ハート・星エフェクトの生成
+function spawnIcons(id) {
+    const container = document.getElementById(id);
+    container.innerHTML = '';
+    const icons = ['❤️', '⭐', '✨'];
+    for (let i = 0; i < 8; i++) {
+        const span = document.createElement('span');
+        span.className = 'icon-effect';
+        span.innerText = icons[Math.floor(Math.random() * icons.length)];
+        span.style.left = (Math.random() * 60 + 20) + '%';
+        span.style.animationDelay = (Math.random() * 0.5) + 's';
+        container.appendChild(span);
+        setTimeout(() => span.remove(), 1500);
+    }
+}
+
+// UI更新
+function updateUI() {
+    document.getElementById('game-info').innerText = `第${round}戦目 (相手残り: ${cpuHandCount}枚)`;
+    document.getElementById('score-board').innerText = `あなた: ${wins} | 相手: ${loses}`;
+}
+
+// ルール表示切り替え
+function toggleRule() {
+    const m = document.getElementById('rule-modal');
+    m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+}
+
+// 紙吹雪エフェクト
+function startConfetti(count) {
+    for (let i = 0; i < count; i++) {
+        const p = document.createElement('div'); p.className = 'confetti';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.backgroundColor = ['#f1c40f','#e67e22','#e74c3c','#3498db'][Math.floor(Math.random()*4)];
+        p.style.animationDuration = (Math.random()*1.5+1.5)+'s';
+        document.body.appendChild(p); setTimeout(() => p.remove(), 3000);
+    }
+}
+
+// ページ読み込み完了時にゲーム開始
+window.onload = initGame;
