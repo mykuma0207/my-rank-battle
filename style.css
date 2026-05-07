@@ -1,4 +1,28 @@
-/* --- タイトル画面のスタイル --- */
+/* --- 全体の基本設定 --- */
+body {
+    text-align: center;
+    font-family: sans-serif;
+    background: #1a252f;
+    color: white;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* タイトルとルールボタンをコンパクトに */
+h1 { font-size: 0.9rem; margin: 5px 0; }
+#rule-btn {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 1px solid white;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+/* --- 【新規】タイトル画面のスタイル --- */
 #title-screen {
     position: fixed;
     top: 0; left: 0;
@@ -54,36 +78,217 @@
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
-    50% { transform: scale(1.05); box-shadow: 0 5px 25px rgba(230,126,34,0.6); }
-    100% { transform: scale(1); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
-/* --- 以下、これまでのCSS (共通部分は一部省略・調整) --- */
-body { text-align: center; font-family: sans-serif; background: #1a252f; color: white; margin: 0; padding: 2px; overflow-x: hidden; }
-h1 { font-size: 0.85rem; margin: 2px 0; }
-#rule-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid white; padding: 2px 8px; border-radius: 20px; font-size: 0.6rem; }
-.char-img { width: 55px; height: 55px; border-radius: 50%; border: 1px solid white; object-fit: cover; }
-.card-deck { display: flex; justify-content: center; align-items: flex-end; gap: -15px; min-height: 100px; }
-.card { width: 18vw; max-width: 80px; aspect-ratio: 2/3; border: 1px solid #333; border-radius: 6px; background: #2c3e50; display: flex; justify-content: center; align-items: center; position: relative; }
-.card img { width: 94%; height: 94%; object-fit: contain; }
+/* --- 【修正】ゲーム本編のレイアウト構造 --- */
+#game-main-area {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
 
-/* 扇状の設定 */
+/* キャラクターエリア（横並びを強制） */
+#character-area {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.char-box {
+    flex: 1;
+    position: relative;
+    text-align: center;
+}
+
+.char-img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    border: 1px solid white;
+    object-fit: cover;
+    background: #34495e;
+}
+
+#center-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+}
+
+#vs-icon {
+    font-size: 1rem;
+    color: #e74c3c;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* バトルフィールド（場を横並びに強制） */
+#battle-field {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 10px auto;
+}
+
+.card-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 情報表示テキスト */
+#game-info, #score-board { font-size: 0.8rem; margin: 2px 0; font-weight: bold; }
+#result-text { font-size: 1.1rem; font-weight: bold; color: #f1c40f; min-height: 1.2em; margin: 5px 0; }
+
+/* --- カードと手札のデザイン --- */
+.card-deck {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: -15px;
+    min-height: 110px;
+    margin: 10px 0;
+}
+
+.card {
+    width: 18vw;
+    max-width: 85px;
+    aspect-ratio: 2/3;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background: #2c3e50;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.card img {
+    width: 94%;
+    height: 94%;
+    object-fit: contain;
+}
+
+/* プレイヤー手札の扇状設定 */
 #player-hand .card:nth-child(1) { transform: rotate(-15deg) translateY(10px); }
 #player-hand .card:nth-child(2) { transform: rotate(-7deg) translateY(3px); }
+#player-hand .card:nth-child(3) { transform: rotate(0deg); }
 #player-hand .card:nth-child(4) { transform: rotate(7deg) translateY(3px); }
 #player-hand .card:nth-child(5) { transform: rotate(15deg) translateY(10px); }
 
-/* 特殊演出メッセージ */
-.special-msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; font-size: 3.5rem; font-weight: bold; pointer-events: none; width: 100%; text-align: center; }
-.gekokujo-text { color: red; text-shadow: 2px 2px 0 #fff; animation: zoomOut 1.5s forwards; }
-.s-arrival-text { color: gold; text-shadow: 2px 2px 0 #fff; animation: zoomOut 2s forwards; }
-@keyframes zoomOut { 0% { transform: translate(-50%, -50%) scale(0.5); opacity:0; } 100% { transform: translate(-50%, -50%) scale(1.5); opacity:0; } }
+/* ホバー/タップ時の挙動 */
+.card:active {
+    z-index: 100;
+    transform: translateY(-15px) scale(1.1) rotate(0deg) !important;
+    border-color: gold;
+}
 
-/* モーダル・紙吹雪・アイコン等 (以前のまま) */
-.icon-effect { position: absolute; font-size: 20px; animation: icon-float 1.2s ease-out forwards; }
-@keyframes icon-float { 0% { transform: translateY(20px) scale(0.5); opacity: 0; } 100% { transform: translateY(-50px) scale(1.3); opacity: 0; } }
+.empty {
+    border: 2px dashed #7f8c8d !important;
+    background: rgba(255,255,255,0.05) !important;
+}
+
+/* Sランクのオーラ */
+.card[data-type="S"] {
+    border-color: gold;
+    box-shadow: 0 0 10px gold;
+    animation: s-glow 1s infinite alternate;
+}
+@keyframes s-glow { from { filter: brightness(1); } to { filter: brightness(1.2); } }
+
+/* --- 演出・エフェクト --- */
+.special-msg {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    font-size: 3.5rem;
+    font-weight: bold;
+    pointer-events: none;
+    width: 100%;
+    text-align: center;
+}
+
+.gekokujo-text { color: red; text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff; animation: zoomOut 1.5s forwards; }
+.s-arrival-text { color: gold; text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff; animation: zoomOut 2s forwards; }
+@keyframes zoomOut { 
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity:0; } 
+    20% { transform: translate(-50%, -50%) scale(1.2); opacity:1; }
+    100% { transform: translate(-50%, -50%) scale(1.5); opacity:0; } 
+}
+
 .char-win { animation: bounce 0.5s ease 2; }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-.modal { display: none; position: fixed; z-index: 6000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
-.modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2c3e50; padding: 20px; border-radius: 10px; border: 1px solid gold; width: 80%; }
+.char-lose { animation: depress 0.8s ease-in-out forwards; }
+@keyframes depress { 0% { transform: translateY(0); } 100% { transform: translateY(10px); } }
+
+.effect-container {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 60px; height: 60px;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.icon-effect {
+    position: absolute;
+    font-size: 20px;
+    animation: icon-float 1.2s ease-out forwards;
+}
+
+@keyframes icon-float {
+    0% { transform: translateY(20px) scale(0.5); opacity: 0; }
+    30% { opacity: 1; }
+    100% { transform: translateY(-50px) scale(1.3); opacity: 0; }
+}
+
+/* --- UI・システム --- */
+#reset-btn {
+    display: none;
+    padding: 5px 12px;
+    background: #e67e22;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 6000;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #2c3e50;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid gold;
+    width: 80%;
+}
+
+.confetti {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    z-index: 1000;
+    top: -10px;
+    animation: fall linear forwards;
+}
+
+@keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
