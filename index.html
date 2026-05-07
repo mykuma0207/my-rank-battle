@@ -3,12 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ランクバトル</title>
-    <link rel="stylesheet" href="style.css"> <!-- ここ！ -->
+    <title>ランク・バトル！究極版</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- (中略：h1やdivなどのボディ部分) -->
+    <h1>ランク・バトル！</h1>
+    <button id="rule-btn" onclick="toggleRule()">ルール確認</button>
 
-    <script src="script.js"></script> <!-- ここ！ -->
+    <!-- CPUの手札エリア -->
+    <div id="cpu-hand" class="card-deck cpu-deck"></div>
+
+    <div id="character-area">
+        <div class="char-box">
+            <div id="p-effect-container" class="effect-container"></div>
+            <img src="images/player.png" id="player-char" class="char-img">
+            <p class="char-name">あなた</p>
+        </div>
+        <div id="center-ui">
+            <div id="vs-icon">VS</div>
+            <button id="reset-btn" onclick="initGame()">RETRY</button>
+        </div>
+        <div class="char-box">
+            <div id="c-effect-container" class="effect-container"></div>
+            <img src="images/cpu.png" id="cpu-char" class="char-img">
+            <p class="char-name">対戦相手</p>
+        </div>
+    </div>
+
+    <p id="game-info"></p>
+    <p id="score-board"></p>
+    <div id="result-text">準備中...</div>
+    <div id="special-msg" class="special-msg"></div>
+
+    <div id="battle-field">
+        <div class="card-slot"><div id="player-pushed" class="card empty"></div></div>
+        <div class="card-slot"><div id="cpu-pushed" class="card empty"></div></div>
+    </div>
+
+    <div id="player-hand" class="card-deck"></div>
+
+    <div id="rule-modal" class="modal">
+        <div class="modal-content">
+            <h2>対戦ルール</h2>
+            <p>● S > A > B > C > D > E の順に強い</p>
+            <p>● <strong>【例外】E は A に勝てる！</strong></p>
+            <p>● 5枚の手札から3回勝負</p>
+            <button onclick="toggleRule()">閉じる</button>
+        </div>
+    </div>
+
+    <!-- ここでJSを読み込む -->
+    <script src="script.js"></script>
 </body>
 </html>
