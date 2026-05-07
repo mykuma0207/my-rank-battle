@@ -4,58 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>まゐのカードバトル！</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a252f">
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>まゐのカードバトル！</h1>
-    <button id="rule-btn" onclick="toggleRule()">ルール確認</button>
 
-    <!-- CPUの手札エリア -->
-    <div id="cpu-hand" class="card-deck cpu-deck"></div>
-
-    <div id="character-area">
-        <div class="char-box">
-            <div id="p-effect-container" class="effect-container"></div>
-            <img src="images/player.png" id="player-char" class="char-img">
-            <p class="char-name">あなた</p>
-        </div>
-        <div id="center-ui">
-            <div id="vs-icon">VS</div>
-            <button id="reset-btn" onclick="initGame()">RETRY</button>
-        </div>
-        <div class="char-box">
-            <div id="c-effect-container" class="effect-container"></div>
-            <img src="images/cpu.png" id="cpu-char" class="char-img">
-            <p class="char-name">対戦相手</p>
+    <!-- タイトル画面 -->
+    <div id="title-screen">
+        <div class="title-content">
+            <h1 class="main-title">まゐの<br>カードバトル！</h1>
+            <!-- ロゴ代わりにSランク画像を。images/S.png があれば表示されます -->
+            <div class="title-logo-container">
+                <img src="images/S.png" class="title-logo" onerror="this.style.display='none'">
+            </div>
+            <button id="start-btn" onclick="startGame()">GAME START</button>
         </div>
     </div>
 
-    <p id="game-info"></p>
-    <p id="score-board"></p>
-    <div id="result-text">準備中...</div>
-    <div id="special-msg" class="special-msg"></div>
+    <!-- ゲーム本編エリア (最初は隠しておく) -->
+    <div id="game-main-area" style="display:none;">
+        <h1>まゐのカードバトル！</h1>
+        <button id="rule-btn" onclick="toggleRule()">ルール確認</button>
 
-    <div id="battle-field">
-        <div class="card-slot"><div id="player-pushed" class="card empty"></div></div>
-        <div class="card-slot"><div id="cpu-pushed" class="card empty"></div></div>
+        <div id="character-area">
+            <div class="char-box">
+                <div id="p-effect-container" class="effect-container"></div>
+                <img src="images/player.png" id="player-char" class="char-img">
+                <p class="char-name">あなた</p>
+            </div>
+            <div id="center-ui">
+                <div id="vs-icon">VS</div>
+                <button id="reset-btn" onclick="initGame()">RETRY</button>
+            </div>
+            <div class="char-box">
+                <div id="c-effect-container" class="effect-container"></div>
+                <img src="images/cpu.png" id="cpu-char" class="char-img">
+                <p class="char-name">対戦相手</p>
+            </div>
+        </div>
+
+        <p id="game-info">準備中...</p>
+        <p id="score-board">あなた: 0 | 相手: 0</p>
+        <div id="result-text">カードを選んでね</div>
+        <div id="special-msg" class="special-msg"></div>
+
+        <div id="battle-field">
+            <div class="card-slot"><div id="player-pushed" class="card empty"></div></div>
+            <div class="card-slot"><div id="cpu-pushed" class="card empty"></div></div>
+        </div>
+
+        <div id="player-hand" class="card-deck"></div>
     </div>
 
-    <div id="player-hand" class="card-deck"></div>
-
+    <!-- ルールモーダル -->
     <div id="rule-modal" class="modal">
         <div class="modal-content">
             <h2>対戦ルール</h2>
             <p>● S > A > B > C > D > E の順に強い</p>
             <p>● <strong>【例外】E は A に勝てる！</strong></p>
             <p>● 5枚の手札から3回勝負</p>
+            <p>● Sランクの出現率は 5%</p>
             <button onclick="toggleRule()">閉じる</button>
         </div>
     </div>
 
-    <!-- ここでJSを読み込む -->
     <script src="script.js"></script>
 </body>
 </html>
