@@ -1,3 +1,7 @@
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js');
+}
+
 // --- ゲームの状態管理 ---
 let playerHand = [], round = 1, wins = 0, loses = 0, cpuHandCount = 5;
 const ranks = ['S', 'A', 'B', 'C', 'D', 'E'];
